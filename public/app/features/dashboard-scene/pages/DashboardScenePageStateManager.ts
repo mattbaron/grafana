@@ -71,8 +71,6 @@ export class DashboardScenePageStateManager extends StateManagerBase<DashboardSc
   }: LoadDashboardOptions): Promise<DashboardDTO | null> {
     const cacheKey = route === DashboardRoutes.Home ? HOME_DASHBOARD_CACHE_KEY : uid;
 
-    const isV2Mode = config.featureToggles.dashboardSchemaV2 && config.featureToggles.useV2DashboardsAPI;
-
     if (!params) {
       const cachedDashboard = this.getDashboardFromCache(cacheKey);
 
@@ -89,7 +87,6 @@ export class DashboardScenePageStateManager extends StateManagerBase<DashboardSc
           rsp = await buildNewDashboardSaveModel(urlFolderUid);
 
           break;
-
         case DashboardRoutes.Home:
           rsp = await getBackendSrv().get('/api/dashboards/home');
 
@@ -105,12 +102,7 @@ export class DashboardScenePageStateManager extends StateManagerBase<DashboardSc
 
           break;
         case DashboardRoutes.Public: {
-          const publicDashboard = await dashboardLoaderSrv.loadDashboard('public', '', uid, isV2Mode);
-          if (!isV2Mode) {
-            rsp = publicDashboard as DashboardDTO;
-          }
-
-          return rsp;
+          return await dashboardLoaderSrv.loadDashboard('public', '', uid);
         }
         default:
           const queryParams = params
