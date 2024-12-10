@@ -2,6 +2,7 @@ import { DashboardV2Spec } from '@grafana/schema/dist/esm/schema/dashboard/v2alp
 import { DashboardDTO } from 'app/types';
 
 import { LegacyDashboardAPI } from './legacy';
+import { TransitionalDashboardAPI } from './transitional_dashboard_api';
 import { DashboardAPI, DashboardWithAccessInfo } from './types';
 import { getDashboardsApiVersion } from './utils';
 import { K8sDashboardAPI } from './v0';
@@ -18,12 +19,14 @@ type DashboardReturnTypes = DashboardDTO | DashboardWithAccessInfo<DashboardV2Sp
 
 let clients: Partial<DashboardAPIClients> | undefined;
 
-export function setDashboardAPI(override: Partial<DashboardAPIClients> | undefined) {
-  if (process.env.NODE_ENV !== 'test') {
-    throw new Error('dashboardAPI can be only overridden in test environment');
-  }
-  clients = override;
-}
+// Overloads
+export function getDashboardAPI(): DashboardAPI<DashboardDTO>;
+export function getDashboardAPI(opts: V2ModeOptions): DashboardAPI<DashboardWithAccessInfo<DashboardV2Spec>>;
+
+export function getDashboardAPI(opts?: V2ModeOptions): DashboardAPI<any> {
+  const v = getDashboardsApiVersion();
+  const v2api = new K8sDashboardV2APIStub();
+  const v0api = new K8sDashboardAPI();
 
 // Overloads
 export function getDashboardAPI(): DashboardAPI<DashboardDTO>;

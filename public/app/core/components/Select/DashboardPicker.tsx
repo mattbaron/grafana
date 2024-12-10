@@ -7,6 +7,7 @@ import { AsyncSelectProps, AsyncSelect } from '@grafana/ui';
 import { backendSrv } from 'app/core/services/backend_srv';
 import { AnnoKeyFolder, AnnoKeyFolderTitle } from 'app/features/apiserver/types';
 import { getDashboardAPI } from 'app/features/dashboard/api/dashboard_api';
+import { DashboardWithAccessInfo } from 'app/features/dashboard/api/types';
 import { DashboardSearchItem } from 'app/features/search/types';
 import { DashboardDTO } from 'app/types';
 
@@ -78,7 +79,6 @@ export const DashboardPicker = ({
       } else {
         // this means that the dashboard returned is a v1 schema
         const resWithSchemaV1 = await getDashboardAPI().getDashboardDTO(value, undefined);
-
         if (resWithSchemaV1.dashboard) {
           setCurrent({
             value: {
