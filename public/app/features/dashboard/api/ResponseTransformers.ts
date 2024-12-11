@@ -176,4 +176,5 @@ export function ensureV1Response(
 export const ResponseTransformers = {
   ensureV2Response,
   ensureV1Response,
+  ensureV1ResponseFromV0,
 };
