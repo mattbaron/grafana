@@ -122,6 +122,10 @@ func (r *queryREST) Connect(connectCtx context.Context, name string, _ runtime.O
 		// Parses the request and splits it into multiple sub queries (if necessary)
 		req, err := b.parser.parseRequest(ctx, raw)
 		if err != nil {
+			_, tmpspan := b.tracer.Start(ctx, "QueryService.FailedParsing")
+			defer tmpspan.End()
+			b.log.Error("Temp error parsing query", "error", err, "ds", raw.Queries[0].Datasource.UID)
+			span.RecordError(err)
 			var refError ErrorWithRefID
 			statusCode := http.StatusBadRequest
 			message := err
@@ -176,7 +180,7 @@ func (b *QueryAPIBuilder) execute(ctx context.Context, req parsedRequestInfo) (q
 		b.log.Debug("executing empty query")
 		qdr = &backend.QueryDataResponse{}
 	case 1:
-		b.log.Debug("executing single query")
+		b.log.Debug("executing single query", req.Requests[0].UID)
 		qdr, err = b.handleQuerySingleDatasource(ctx, req.Requests[0])
 		if alertQueryWithoutExpression(req) {
 			b.log.Debug("handling alert query without expression")

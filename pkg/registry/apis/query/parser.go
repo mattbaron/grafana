@@ -83,9 +83,10 @@ func (p *queryParser) parseRequest(ctx context.Context, input *query.QueryDataRe
 			return rsp, MakePublicQueryError(q.RefID, "multiple queries with same refId")
 		}
 
+		p.logger.Error("Getting valid ref for datasource", "ds", q.Datasource)
 		ds, err := p.getValidDataSourceRef(ctx, q.Datasource, q.DatasourceID)
 		if err != nil {
-			p.logger.Error("Failed to get valid datasource ref", "error", err)
+			p.logger.Error("Failed to get valid datasource ref", "error", err, "uid", q.Datasource.UID)
 			return rsp, err
 		}
 
