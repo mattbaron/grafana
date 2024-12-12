@@ -16,7 +16,7 @@ type DashboardAPIClients = {
 
 type DashboardReturnTypes = DashboardDTO | DashboardWithAccessInfo<DashboardV2Spec>;
 
-let clients: Partial<DashboardAPIClients> | undefined;
+let clients: Partial<DashboardAPIClients>;
 
 // Overloads
 export function getDashboardAPI(): DashboardAPI<DashboardDTO>;

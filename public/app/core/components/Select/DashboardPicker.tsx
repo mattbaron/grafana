@@ -78,6 +78,7 @@ export const DashboardPicker = ({
       } else {
         // this means that the dashboard returned is a v1 schema
         const resWithSchemaV1 = await getDashboardAPI().getDashboardDTO(value, undefined);
+
         if (resWithSchemaV1.dashboard) {
           setCurrent({
             value: {
