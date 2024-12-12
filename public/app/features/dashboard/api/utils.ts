@@ -38,7 +38,7 @@ export function isDashboardResource(
   return isK8sDashboard;
 }
 
-export function isDashboardV2Resource(obj: object): obj is DashboardV2Spec {
+export function isDashboardV2Spec(obj: object): obj is DashboardV2Spec {
   return 'elements' in obj;
 }
 
