@@ -222,6 +222,12 @@ func (st DBstore) FullSync(ctx context.Context, instances []models.AlertInstance
 		if _, err := sess.Exec("DELETE FROM alert_instance"); err != nil {
 			return fmt.Errorf("failed to delete alert_instance table: %w", err)
 		}
+
+		insert, err := sess.DB().Prepare("INSERT INTO alert_instance (rule_org_id, rule_uid, labels, labels_hash, current_state, current_reason, current_state_since, current_state_end, last_eval_time, resolved_at, last_sent_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)")
+		if err != nil {
+			return fmt.Errorf("failed to prepare alert_instance table insert: %w", err)
+		}
+
 		for _, alertInstance := range instances {
 			if err := models.ValidateAlertInstance(alertInstance); err != nil {
 				st.Logger.Warn("Failed to validate alert instance, skipping", "err", err, "rule_uid", alertInstance.RuleUID)
@@ -233,8 +239,7 @@ func (st DBstore) FullSync(ctx context.Context, instances []models.AlertInstance
 				continue
 			}
 
-			_, err = sess.Exec(
-				"INSERT INTO alert_instance (rule_org_id, rule_uid, labels, labels_hash, current_state, current_reason, current_state_since, current_state_end, last_eval_time, resolved_at, last_sent_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+			_, err = insert.Exec(
 				alertInstance.RuleOrgID,
 				alertInstance.RuleUID,
 				labelTupleJSON,
